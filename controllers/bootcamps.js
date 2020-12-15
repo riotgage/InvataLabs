@@ -8,7 +8,12 @@ const geocoder = require('../utils/geocoder');
 //@access Public
 exports.getBootcamps= async(req,res,next)=>{
     try{
-        const bootcamps=await Bootcamp.find();
+        let query;
+        let queryStr=JSON.stringify(req.query);
+        queryStr=queryStr.replace(/\b(gt|gte|lte|lt|in)\b/g,match=>`$${match}`);
+        console.log(queryStr)
+        query=Bootcamp.find(JSON.parse(queryStr))
+        const bootcamps=await query;
         res.status(200).json({
             success:true,
             count:bootcamps.length, 
@@ -17,7 +22,6 @@ exports.getBootcamps= async(req,res,next)=>{
     }catch(error){
         next(error)
     }
-
 }
 
 //@desc Get One Bootcamp
@@ -100,8 +104,11 @@ exports.updateBootcamp= async(req,res,next)=>{
 // @desc      Get bootcamps within a radius
 // @route     GET /api/v1/bootcamps/radius/:zipcode/:distance
 // @access    Private
+// https://docs.mongodb.com/manual/reference/operator/query/centerSphere/
+
 exports.getBootcampsInRadius = async (req, res, next) => {
     const { zipcode, distance } = req.params;
+
 
     // Get lat/lng from geocoder
     const loc = await geocoder.geocode(zipcode);

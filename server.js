@@ -15,6 +15,7 @@ const PORT=process.env.PORT || 5000;
 
 //Route Files
 const bootcamps=require('./routes/bootcamps')
+const courses=require('./routes/courses')
 
 //Middleware 
 if(process.env.NODE_ENV==='development'){
@@ -23,6 +24,8 @@ if(process.env.NODE_ENV==='development'){
 app.use(express.json())
 app.use(express.urlencoded({extended:true})) 
 app.use('/api/v1/bootcamps',bootcamps);
+app.use('/api/v1/courses',courses);
+
 app.use(errorHandler)
 
 //Wild Card Route
