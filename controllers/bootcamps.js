@@ -8,16 +8,71 @@ const geocoder = require('../utils/geocoder');
 //@access Public
 exports.getBootcamps= async(req,res,next)=>{
     try{
+        
         let query;
-        let queryStr=JSON.stringify(req.query);
+        // For sorting and searching we are using URL type
+        // api/v1/bootcamps?select=...
+        // this wont work because mongoose tries to match select as an arguent in its mode 
+        // and there is no such arg in model
+        // so we need to remove this path parameter from URL
+        
+        const reqQuery={...req.query};
+        const removeFields=['select','sort','limit','page'];
+
+        removeFields.forEach(param=>delete reqQuery[param])
+
+        let queryStr=JSON.stringify(reqQuery);
+
         queryStr=queryStr.replace(/\b(gt|gte|lte|lt|in)\b/g,match=>`$${match}`);
-        console.log(queryStr)
+        
+        // Finding Resource
         query=Bootcamp.find(JSON.parse(queryStr))
+        
+        // Select https://mongoosejs.com/docs/queries.html
+        
+        if(req.query.select){
+            const fields=req.query.select.split(',').join(' ');
+            query=query.select(fields)
+        }
+
+        // Sorting Reselts (https://mongoosejs.com/docs/queries.html)
+        if(req.query.sort){
+            const sortBy=req.query.sort.split(',').join(' ');
+            query=query.sort(sortBy)
+        }else{
+            query=query.sort('-createdAt')
+        }
+
+        // Pagination
+        const page=parseInt(req.query.page,10) || 1;
+        const limit=parseInt(req.query.limit,10) || 10;
+        const startindex=(page-1)*limit;
+        const endindex=page*limit
+        const total=await Bootcamp.countDocuments();
+
+        query=query.skip(startindex).limit(limit);
+
         const bootcamps=await query;
+
+        const pagination={};
+        if(endindex<total){
+            pagination.next={
+                page:page+1,
+                limit
+            }
+        }
+        if(startindex>0){
+            pagination.prev={
+                page:page-1,
+                limit
+            }
+        }
+        
         res.status(200).json({
             success:true,
             count:bootcamps.length, 
-            msg:bootcamps
+            msg:bootcamps,
+            pagination
         });
     }catch(error){
         next(error)

@@ -3,8 +3,8 @@ const Course=require('../models/Course')
 const errorResponse=require('../utils/errorResponse');
 
 //@desc Get All Courses
-//@Route Get /api/v1/courses
-//@Route Get /api/v1/bootcamps/:bootcampId/courses
+//@Route Get /api/v1/courses                           Routed from server
+//@Route Get /api/v1/bootcamps/:bootcampId/courses     Routed from bootcamp router
 //@access Public
 
 exports.getCourses=async(req,res,next)=>{
@@ -16,6 +16,7 @@ exports.getCourses=async(req,res,next)=>{
         else{
             query=Course.find()
         } 
+        // query.populate('bootcamp')
 
         const Courses=await query;
 

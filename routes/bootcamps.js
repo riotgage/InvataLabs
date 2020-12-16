@@ -6,6 +6,13 @@ const { getBootcamp,getBootcamps,getBootcampsInRadius,createBootcamp,deleteBootc
 
 const router=express.Router();
 
+const courseRouter=require('./courses')
+
+// If we get request api/v1/bootcamps/:bootcampId/courses route this to to courses router
+// this will maintain integrity of api/v1/bootcamps integrity
+// and all the course related reqs are handled by course router
+router.use('/:bootcampId/courses',courseRouter)
+
 router
     .route('/radius/:zipcode/:distance')
     .get(getBootcampsInRadius)
