@@ -1,41 +1,41 @@
 # InvataLabs Backend API Specifications
 
-Create the backend for a bootcamp directory website. The frontend/UI will be created by another team (future course). The html/css template has been created and can be used as a reference for functionality. All of the functionality below needs to be fully implmented in this project.
+Create the backend for a Workshops directory website. The frontend/UI will be created by another team (future course). The html/css template has been created and can be used as a reference for functionality. All of the functionality below needs to be fully implmented in this project.
 
-### Bootcamps
-- List all bootcamps in the database
+### Workshops
+- List all Workshops in the database
    * Pagination
    * Select specific fields in result
    * Limit number of results
    * Filter by fields
-- Search bootcamps by radius from zipcode
+- Search Workshops by radius from zipcode
   * Use a geocoder to get exact location and coords from a single address field
-- Get single bootcamp
-- Create new bootcamp
+- Get single workshop
+- Create new workshop
   * Authenticated users only
   * Must have the role "publisher" or "admin"
-  * Only one bootcamp per publisher (admins can create more)
+  * Only one workshop per publisher (admins can create more)
   * Field validation via Mongoose
-- Upload a photo for bootcamp
+- Upload a photo for workshop
   * Owner only
   * Photo will be uploaded to local filesystem
-- Update bootcamps
+- Update Workshops
   * Owner only
   * Validation on update
-- Delete Bootcamp
+- Delete workshop
   * Owner only
-- Calculate the average cost of all courses for a bootcamp
-- Calculate the average rating from the reviews for a bootcamp
+- Calculate the average cost of all courses for a workshop
+- Calculate the average rating from the reviews for a workshop
 
 ### Courses
-- List all courses for bootcamp
+- List all courses for workshop
 - List all courses in general
   * Pagination, filtering, etc
 - Get single course
 - Create new course
   * Authenticated users only
   * Must have the role "publisher" or "admin"
-  * Only the owner or an admin can create a course for a bootcamp
+  * Only the owner or an admin can create a course for a workshop
   * Publishers can create multiple courses
 - Update course
   * Owner only
@@ -43,7 +43,7 @@ Create the backend for a bootcamp directory website. The frontend/UI will be cre
   * Owner only
   
 ### Reviews
-- List all reviews for a bootcamp
+- List all reviews for a workshop
 - List all reviews in general
   * Pagination, filtering, etc
 - Get a single review
