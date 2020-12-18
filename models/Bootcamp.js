@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const geocoder = require('../utils/geocoder');
-
+const Course=require('./Course')
+const options={
+  toJSON:{
+    virtuals:true
+  },
+  toObject:{
+    virtuals:true
+  }
+}
 const BootcampSchema = new mongoose.Schema(
   {
     name: {
@@ -104,13 +112,15 @@ const BootcampSchema = new mongoose.Schema(
       ref: 'User',
       required: true
     }*/
-  },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-  }
+  },options
 ); 
 
+BootcampSchema.virtual('courses',{
+  ref:'Course',
+  localField:'_id',
+  foreignField:'bootcamp',
+  justOne:false
+})
 // Create bootcamp slug from the name
 // this has access body of document
 // so we can just say this.slug to add this property to body
@@ -141,8 +151,7 @@ BootcampSchema.pre('save', async function(next) {
 
 // Cascade delete courses when a bootcamp is deleted
 BootcampSchema.pre('remove', async function(next) {
-  console.log(`Courses being removed from bootcamp ${this._id}`);
-  await this.model('Course').deleteMany({ bootcamp: this._id });
+  await Course.deleteMany({ bootcamp: this._id });
   next();
 });
 

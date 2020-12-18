@@ -2,10 +2,11 @@ const express=require('express');
 const errorHandler=require('../middleware/error')
 
 //Bring in Controller Methods
-const { getBootcamp,getBootcamps,getBootcampsInRadius,createBootcamp,deleteBootcamp,updateBootcamp} = require('../controllers/bootcamps');
+const { getBootcamp,getBootcamps,getBootcampsInRadius,createBootcamp,deleteBootcamp,updateBootcamp,bootcampPhotoUpload} = require('../controllers/bootcamps');
 
 const router=express.Router();
-
+const advancedResults=require('../middleware/advancedResults')
+const Bootcamp=require('../models/Bootcamp')
 const courseRouter=require('./courses')
 
 // If we get request api/v1/bootcamps/:bootcampId/courses route this to to courses router
@@ -18,8 +19,11 @@ router
     .get(getBootcampsInRadius)
 
 router
+    .route('/:id/photo')
+    .put(bootcampPhotoUpload)
+router
     .route('/')
-    .get(getBootcamps)
+    .get(advancedResults(Bootcamp,'courses'),getBootcamps)
     .post(createBootcamp)
 
 router

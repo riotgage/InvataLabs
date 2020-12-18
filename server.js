@@ -4,6 +4,8 @@ const morgan=require('morgan')
 const colors=require('colors') 
 const connectDB=require('./config/db')
 const errorHandler=require('./middleware/error')
+const path=require('path'); 
+const fileupload=require('express-fileupload')
 // Load env file
 dotenv.config({path:'./config/config.env'})
 
@@ -21,6 +23,10 @@ const courses=require('./routes/courses')
 if(process.env.NODE_ENV==='development'){
     app.use(morgan('dev'))
 } 
+
+app.use(fileupload())
+ 
+app.use(express.static(path.join(__dirname,'public')))
 app.use(express.json())
 app.use(express.urlencoded({extended:true})) 
 app.use('/api/v1/bootcamps',bootcamps);

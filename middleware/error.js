@@ -5,7 +5,7 @@ const errorResponse = require("../utils/errorResponse");
 
 const errorHandler=(error,req,res,next)=>{
     console.log(error.stack.red);
-    err=error.message
+    err=error
     //Wrong ID error
     if(error.name=='CastError'){
         const message=`Bootcamp with id ${error.value} not found`

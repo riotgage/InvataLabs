@@ -2,78 +2,15 @@ const { Mongoose } = require('mongoose');
 const Bootcamp=require('../models/Bootcamp')
 const errorResponse=require('../utils/errorResponse');
 const geocoder = require('../utils/geocoder');
+const path=require('path');
+
 
 //@desc Get All Bootcamps
 //@Route Get /api/v1/bootcamps
 //@access Public
 exports.getBootcamps= async(req,res,next)=>{
     try{
-        
-        let query;
-        // For sorting and searching we are using URL type
-        // api/v1/bootcamps?select=...
-        // this wont work because mongoose tries to match select as an arguent in its mode 
-        // and there is no such arg in model
-        // so we need to remove this path parameter from URL
-        
-        const reqQuery={...req.query};
-        const removeFields=['select','sort','limit','page'];
-
-        removeFields.forEach(param=>delete reqQuery[param])
-
-        let queryStr=JSON.stringify(reqQuery);
-
-        queryStr=queryStr.replace(/\b(gt|gte|lte|lt|in)\b/g,match=>`$${match}`);
-        
-        // Finding Resource
-        query=Bootcamp.find(JSON.parse(queryStr))
-        
-        // Select https://mongoosejs.com/docs/queries.html
-        
-        if(req.query.select){
-            const fields=req.query.select.split(',').join(' ');
-            query=query.select(fields)
-        }
-
-        // Sorting Reselts (https://mongoosejs.com/docs/queries.html)
-        if(req.query.sort){
-            const sortBy=req.query.sort.split(',').join(' ');
-            query=query.sort(sortBy)
-        }else{
-            query=query.sort('-createdAt')
-        }
-
-        // Pagination
-        const page=parseInt(req.query.page,10) || 1;
-        const limit=parseInt(req.query.limit,10) || 10;
-        const startindex=(page-1)*limit;
-        const endindex=page*limit
-        const total=await Bootcamp.countDocuments();
-
-        query=query.skip(startindex).limit(limit);
-
-        const bootcamps=await query;
-
-        const pagination={};
-        if(endindex<total){
-            pagination.next={
-                page:page+1,
-                limit
-            }
-        }
-        if(startindex>0){
-            pagination.prev={
-                page:page-1,
-                limit
-            }
-        }
-        
-        res.status(200).json({
-            success:true,
-            count:bootcamps.length, 
-            msg:bootcamps,
-            pagination
-        });
+        res.status(200).json(res.advancedResults)
     }catch(error){
         next(error)
     }
@@ -119,16 +56,16 @@ exports.createBootcamp=async (req,res,next)=>{
 //@access Private
 exports.deleteBootcamp=async (req,res,next)=>{
     try{
-        const bootcamp=await Bootcamp.findByIdAndDelete(req.params.id);
+        const bootcamp=await Bootcamp.findById(req.params.id);
         if(!bootcamp){
-            next(new errorResponse(`Bootcamp not found with id ${req.params.id}`,400))
-
+           return next(new errorResponse(`Bootcamp not found with id ${req.params.id}`,400))
         }
         res.status(200).json({
             success:true,
             msg:"Deleting Bootcamp",
             body:bootcamp
         });
+        bootcamp.remove()
     }catch(error){
         next(error)
     }
@@ -188,3 +125,47 @@ exports.getBootcampsInRadius = async (req, res, next) => {
         next(error)
     }
 };
+
+//@desc Upload Photo for Bootcamp
+//@Route PUT /api/v1/bootcamps/:id/photo
+//@access Private
+exports.bootcampPhotoUpload = async (req,res,next)=>{
+    try{
+        const bootcamp=await Bootcamp.findById(req.params.id);
+        if(!bootcamp){
+           return next(new errorResponse(`Bootcamp not found with id ${req.params.id}`,400))
+        }
+      if(!req.files){
+          return next(new errorResponse(`Please Upload a file`,400))
+      }
+      const file=req.files.file; 
+      
+      if(!file.mimetype.startsWith("image/")){
+          return next(new errorResponse(`Image not found`,400))
+      }
+      
+      // filesize validation
+      if(file.size>process.env.MAX_FILE_SIZE){
+          return next(new errorResponse(`File bigger than ${MAX_FILE_UPLOAD}, cannot process`,400))
+      }
+
+      // Customize filename
+      file.name=`photo_${bootcamp._id}${path.parse(file.name).ext}`;
+      console.log(file.name) 
+      file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`,async(err)=>{
+        if(err){
+            console.error(err)
+            return next(new errorResponse(`Error with file upload`,500))
+        }
+        await Bootcamp.findByIdAndUpdate(req.params.id,{photo:file.name})
+        res.status(200).json({
+            success:true,
+            data:file.name
+        })
+    
+    }) 
+    }catch(error){
+        next(error)
+    }
+    
+}
