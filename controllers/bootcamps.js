@@ -4,7 +4,6 @@ const errorResponse=require('../utils/errorResponse');
 const geocoder = require('../utils/geocoder');
 const path=require('path');
 
-
 //@desc Get All Bootcamps
 //@Route Get /api/v1/bootcamps
 //@access Public
@@ -93,11 +92,10 @@ exports.updateBootcamp= async(req,res,next)=>{
     }
 } 
 
-// @desc      Get bootcamps within a radius
+//@desc Get bootcamps within a radius
 // @route     GET /api/v1/bootcamps/radius/:zipcode/:distance
 // @access    Private
 // https://docs.mongodb.com/manual/reference/operator/query/centerSphere/
-
 exports.getBootcampsInRadius = async (req, res, next) => {
     const { zipcode, distance } = req.params;
 

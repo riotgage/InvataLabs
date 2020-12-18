@@ -18,6 +18,7 @@ const PORT=process.env.PORT || 5000;
 //Route Files
 const bootcamps=require('./routes/bootcamps')
 const courses=require('./routes/courses')
+const auth=require('./routes/auth')
 
 //Middleware 
 if(process.env.NODE_ENV==='development'){
@@ -28,15 +29,17 @@ app.use(fileupload())
  
 app.use(express.static(path.join(__dirname,'public')))
 app.use(express.json())
-app.use(express.urlencoded({extended:true})) 
+app.use(express.urlencoded({extended:true}))
+ 
 app.use('/api/v1/bootcamps',bootcamps);
 app.use('/api/v1/courses',courses);
+app.use('/api/v1/auth',auth);
 
 app.use(errorHandler)
 
 //Wild Card Route
 app.all('*',(req,res)=>{
-    res.send({ 
+    res.status(404).send({ 
         success:false,
         msg:"This path doesn't exist"
     });

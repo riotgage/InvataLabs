@@ -13,8 +13,13 @@ const errorHandler=(error,req,res,next)=>{
     } 
     //Duplicate ID error
     if(error.code===11000){
-            const message=`Bootcamp with name already exists`
-            err=new errorResponse(message,400)
+        message=""
+        Object.keys(error.keyValue).forEach(key=>{
+            message+=`${key} `
+        })
+        message+=` already exists`
+        console.log(`${error.key}`)
+        err=new errorResponse(message,400)
     }
 
     //Mongoose Validation Error
