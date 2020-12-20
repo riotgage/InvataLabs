@@ -39,6 +39,14 @@ exports.getBootcamp= async(req,res,next)=>{
 //@access Private
 exports.createBootcamp=async (req,res,next)=>{
     try{
+        //Add user to req.body
+        req.body.user =req.user.id
+
+        // check for published Bootcamps
+        const publishedBootcamp=await Bootcamp.findOne({user:req.user.id})
+        if(publishedBootcamp && req.user.role!=='admin'){
+            return next(new errorResponse(`${req.user.role} role can not create multiple bootcamps`,400))
+        }
         const bootcamp=await Bootcamp.create(req.body)
         res.status(201).json({
             success:true,     
@@ -59,12 +67,16 @@ exports.deleteBootcamp=async (req,res,next)=>{
         if(!bootcamp){
            return next(new errorResponse(`Bootcamp not found with id ${req.params.id}`,400))
         }
+        if(bootcamp.user.toString()!== req.user.id && req.user.role!=='admin'){
+            return next(new errorResponse(`Permission error, user ${req.user.id} not authorized to update bootcamp `))
+        }
+        
+        bootcamp.remove()
         res.status(200).json({
             success:true,
             msg:"Deleting Bootcamp",
             body:bootcamp
         });
-        bootcamp.remove()
     }catch(error){
         next(error)
     }
@@ -76,13 +88,19 @@ exports.deleteBootcamp=async (req,res,next)=>{
 //@access Private 
 exports.updateBootcamp= async(req,res,next)=>{
     try{
-        const bootcamp=await Bootcamp.findByIdAndUpdate(req.params.id,req.body,{
-            new:true,
-            runValidators:true
-        });
+        let bootcamp=await Bootcamp.findById(req.params.id);
         if(!bootcamp){
             next(new errorResponse(`Bootcamp not found with id ${req.params.id}`,400))
         }
+        console.log(bootcamp)
+        // Make sure request came from bootcamp publisher
+        if(bootcamp.user.toString()!== req.user.id && req.user.role!=='admin'){
+            return next(new errorResponse(`Permission error, user ${req.user.id} not authorized to update bootcamp `))
+        }
+        bootcamp=await Bootcamp.findByIdAndUpdate(req.params.id,req.body,{
+            new:true,
+            runValidators:true
+        })
         res.status(200).json({
             success:true,
             msg:bootcamp    
@@ -133,6 +151,8 @@ exports.bootcampPhotoUpload = async (req,res,next)=>{
         if(!bootcamp){
            return next(new errorResponse(`Bootcamp not found with id ${req.params.id}`,400))
         }
+
+
       if(!req.files){
           return next(new errorResponse(`Please Upload a file`,400))
       }
@@ -146,7 +166,10 @@ exports.bootcampPhotoUpload = async (req,res,next)=>{
       if(file.size>process.env.MAX_FILE_SIZE){
           return next(new errorResponse(`File bigger than ${MAX_FILE_UPLOAD}, cannot process`,400))
       }
-
+      if(bootcamp.user.toString()!== req.user.id && req.user.role!=='admin'){
+        return next(new errorResponse(`Permission error, user ${req.user.id} not authorized to update this bootcamp`,401))
+    }
+    
       // Customize filename
       file.name=`photo_${bootcamp._id}${path.parse(file.name).ext}`;
       console.log(file.name) 

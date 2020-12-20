@@ -6,6 +6,8 @@ const connectDB=require('./config/db')
 const errorHandler=require('./middleware/error')
 const path=require('path'); 
 const fileupload=require('express-fileupload')
+const cookieParser = require('cookie-parser');
+
 // Load env file
 dotenv.config({path:'./config/config.env'})
 
@@ -30,11 +32,12 @@ app.use(fileupload())
 app.use(express.static(path.join(__dirname,'public')))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
- 
+app.use(cookieParser());
+
 app.use('/api/v1/bootcamps',bootcamps);
 app.use('/api/v1/courses',courses);
 app.use('/api/v1/auth',auth);
-
+ 
 app.use(errorHandler)
 
 //Wild Card Route

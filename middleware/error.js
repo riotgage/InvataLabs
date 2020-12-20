@@ -17,7 +17,7 @@ const errorHandler=(error,req,res,next)=>{
         Object.keys(error.keyValue).forEach(key=>{
             message+=`${key} `
         })
-        message+=` already exists`
+        message+=`already exist`
         console.log(`${error.key}`)
         err=new errorResponse(message,400)
     }

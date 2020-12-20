@@ -45,16 +45,17 @@ UserSchema.pre('save',async function(next){
 })
 
 // JWT signature
-UserSchema.methods.getJWTSignature=()=>{
-    return jwt.sign({
-        id:this._id,   
-    },process.env.JWT_SECRET_KEY,{
-        expiresIn:process.env.JWT_EXPIRE
-    })
-} 
+UserSchema.methods.getJWTSignature = function () {
+
+    console.log("JWTID"+ this._id)
+    return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: process.env.JWT_EXPIRE,
+    });
+  };
 
 // Authenticate User with password and hashed password in db
 UserSchema.methods.authPassword=async function (enteredPassword){
+
     return await bcrypt.compare(enteredPassword,this.password)
 } 
 

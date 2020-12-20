@@ -65,11 +65,15 @@ exports.getCourse=async(req,res,next)=>{
 exports.addCourse=async(req,res,next)=>{
     try{
         req.body.bootcamp=req.params.bootcampId
+        req.body.user=req.user.id
         const bootcamp=await Bootcamp.findById(req.params.bootcampId)
         if(!bootcamp){
             return next(new ErrorResponse("No Bootcamp with id "+req.params.bootcampId,404))
         }
 
+        if(bootcamp.user.toString()!==req.user.id &&req.user.role!=='admin'){
+            return next(new errorResponse(`Permission error, user ${req.user.id} not authorized to update this bootcamp`,401))
+        }
         const course=await Course.create(req.body)
 
 
@@ -92,7 +96,9 @@ exports.updateCourse=async(req,res,next)=>{
         if(!course){
             return next(new ErrorResponse("No course found with id " + req.params.id,404))
         }
-        
+        if(course.user.toString()!==req.user.id &&req.user.role!=='admin'){
+            return next(new errorResponse(`Permission error, user ${req.user.id} not authorized to update this course`,401))
+        }
         course=await Course.findByIdAndUpdate(req.params.id,req.body,{
             new:true,
             runValidators:true
@@ -115,6 +121,9 @@ exports.deleteCourse=async(req,res,next)=>{
         course=await Course.findById(req.params.id)
         if(!course){
             return next(new ErrorResponse("No course found with id " + req.params.id,404))
+        }
+        if(course.user.toString()!==req.user.id &&req.user.role!=='admin'){
+            return next(new errorResponse(`Permission error, user ${req.user.id} not authorized to update this course`,401))
         }
         await course.remove();
         res.status(200).json({

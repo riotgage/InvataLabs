@@ -1,6 +1,6 @@
 const express=require('express');
 const errorHandler=require('../middleware/error')
-
+const {protect,roleAuthorize}=require('../middleware/auth')
 //Bring in Controller Methods
 const { getBootcamp,getBootcamps,getBootcampsInRadius,createBootcamp,deleteBootcamp,updateBootcamp,bootcampPhotoUpload} = require('../controllers/bootcamps');
 
@@ -20,16 +20,16 @@ router
 
 router
     .route('/:id/photo')
-    .put(bootcampPhotoUpload)
+    .put(protect,roleAuthorize('publisher','admin'),bootcampPhotoUpload)
 router
     .route('/')
     .get(advancedResults(Bootcamp,'courses'),getBootcamps)
-    .post(createBootcamp)
+    .post(protect,roleAuthorize('publisher','admin'),createBootcamp)
 
 router
-    .route('/:id')
+    .route('/:id')  
     .get(getBootcamp)
-    .put(updateBootcamp)
-    .delete(deleteBootcamp)
+    .put(protect,roleAuthorize('publisher','admin'),updateBootcamp)
+    .delete(protect,roleAuthorize('publisher','admin'),deleteBootcamp)
     
 module.exports=router

@@ -1,5 +1,6 @@
 const express=require('express');
 const errorHandler=require('../middleware/error')
+const {protect,roleAuthorize}=require('../middleware/auth')
 
 //Bring in Controller Methods
 const {getCourses,getCourse,addCourse,updateCourse,deleteCourse} = require('../controllers/courses');
@@ -11,8 +12,8 @@ const router=express.Router({mergeParams:true});
 router
     .route('/:id')
     .get(getCourse)
-    .put(updateCourse)
-    .delete(deleteCourse)
+    .put(protect,roleAuthorize('publisher','admin'),updateCourse)
+    .delete(protect,roleAuthorize('publisher','admin'),deleteCourse)
 
 router
     .route('/')
@@ -20,6 +21,6 @@ router
         path:'bootcamp',
         select:'name description'
     }),getCourses)
-    .post(addCourse)
+    .post(protect,roleAuthorize('publisher','admin'),addCourse)
 
 module.exports=router
