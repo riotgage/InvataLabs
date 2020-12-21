@@ -53,6 +53,29 @@ exports.login=async(req,res,next)=>{
     }
 }
 
+//@desc Get Log user out User / clear Cookie
+//@Route GET /api/v1/auth/logout
+//@access Public
+
+exports.logout=async(req,res,next)=>{
+    try{
+        if(!req.user){
+            return next(new errorResponse("No user is logged in"))
+        }
+        res.cookie('token','none',{
+            expiresIn: Date.now()*10*1000,
+            httpOnly:true
+        })
+        res.status(200).json({
+           success:true,
+           data:{}
+       })
+    }catch(error){
+        next(error);
+    }
+}
+
+
 //@desc Get Logged in User
 //@Route GET /api/v1/auth/login
 //@access Public

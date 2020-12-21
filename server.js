@@ -7,7 +7,9 @@ const errorHandler=require('./middleware/error')
 const path=require('path'); 
 const fileupload=require('express-fileupload')
 const cookieParser = require('cookie-parser');
-
+const helmet = require("helmet");
+var xss = require('xss-clean')
+const mongoSanitize = require('express-mongo-sanitize');
 // Load env file
 dotenv.config({path:'./config/config.env'})
 
@@ -29,8 +31,10 @@ if(process.env.NODE_ENV==='development'){
     app.use(morgan('dev'))
 } 
 
+app.use(mongoSanitize());
+app.use(helmet());
+app.use(xss())
 app.use(fileupload())
- 
 app.use(express.static(path.join(__dirname,'public')))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))

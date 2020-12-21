@@ -8,7 +8,7 @@ const errorHandler=(error,req,res,next)=>{
     err=error
     //Wrong ID error
     if(error.name=='CastError'){
-        const message=`Resource with id ${error.value} not found`
+        const message=`Resource not found`
         err=new errorResponse(message,404)
     } 
     //Duplicate ID error
