@@ -19,7 +19,6 @@ exports.register=async(req,res,next)=>{
             password,
             role
         });
-
         sendResponse(user,200,res)
     }catch(error){
         next(error);
@@ -73,21 +72,6 @@ exports.getCurrentUser=async(req,res,next)=>{
     }
 }
 
-// exports.deleteUser=async(req,res,next)=>{
-//     try{
-//         if(!req.user){
-//             return next(new errorResponse("No user is logged in"))
-//         }
-//         const user=User.remove(req.user.id);
-//         res.status(200).json({
-//            success:true,
-//            data:user
-//        })
-//     }catch(error){
-//         next(error);
-//     }
-// }
-
 //@desc Update User 
 //@Route PUT /api/v1/auth/update
 //@access Private
@@ -139,7 +123,7 @@ exports.forgotPassword=async (req,res,next)=>{
         const user=await User.findOne({email:req.body.email});
         console.log(`${user}`)
         if(!user){
-            return next(new errorResponse(`If email is registered a email will be sent. `,401))
+            return next(new errorResponse(`If email is registered a email will be sent.`,401))
         }
 
         // Reset Token
@@ -163,7 +147,7 @@ exports.forgotPassword=async (req,res,next)=>{
                 })
                 res.status(200).json({
                     success:true,
-                    data:"Email Sent"
+                    data:"If email is registered a email will be sent."
                 })
           }catch(error){
               console.log(error)

@@ -8,11 +8,12 @@ const router=express.Router();
 const advancedResults=require('../middleware/advancedResults')
 const Bootcamp=require('../models/Bootcamp')
 const courseRouter=require('./courses')
-
+const reviewRouter=require('./reviews')
 // If we get request api/v1/bootcamps/:bootcampId/courses route this to to courses router
 // this will maintain integrity of api/v1/bootcamps integrity
 // and all the course related reqs are handled by course router
 router.use('/:bootcampId/courses',courseRouter)
+router.use('/:bootcampId/reviews',reviewRouter)
 
 router
     .route('/radius/:zipcode/:distance')

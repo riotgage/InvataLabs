@@ -13,6 +13,4 @@ router.put('/updateuser',protect,updateUser)
 router.put('/updateUserPassword',protect,updateUserPassword)
 router.get('/forgotpassword',forgotPassword);
 
-// router.post('/deleteUser',protect,deleteUser);
-
 module.exports=router;

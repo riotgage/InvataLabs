@@ -43,8 +43,8 @@ const CourseSchema = new mongoose.Schema({
     },
   });
 
-  //static function directly works on Collections
-  // for normal methodyou need to find a document first and then use method
+  // static function directly works on Collections
+  // for normal method you need to find a document first and then use method
   CourseSchema.statics.getAverageCost=async function(bootcampId){
     const obj=await this.aggregate([{
       $match:{bootcamp:bootcampId}
