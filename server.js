@@ -8,12 +8,20 @@ const path=require('path');
 const fileupload=require('express-fileupload')
 const cookieParser = require('cookie-parser');
 const helmet = require("helmet");
-var xss = require('xss-clean')
+const xss = require('xss-clean')
+const hpp=require('hpp')
+const cors = require('cors')
 const mongoSanitize = require('express-mongo-sanitize');
+const rateLimit = require("express-rate-limit");
 // Load env file
 dotenv.config({path:'./config/config.env'})
 
-
+// Rate limit object
+const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 100
+  });
+   
 connectDB()   
 //Variables
 const app=express()
@@ -30,7 +38,7 @@ const reviews=require('./routes/reviews')
 if(process.env.NODE_ENV==='development'){
     app.use(morgan('dev'))
 } 
-
+app.use(cors())
 app.use(mongoSanitize());
 app.use(helmet());
 app.use(xss())
@@ -39,7 +47,8 @@ app.use(express.static(path.join(__dirname,'public')))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser());
-
+app.use(limiter);
+app.use(hpp())
 app.use('/api/v1/bootcamps',bootcamps);
 app.use('/api/v1/courses',courses);
 app.use('/api/v1/auth',auth);
