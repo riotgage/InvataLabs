@@ -97,3 +97,8 @@ This repo is a node backend to this platform which provides many of the must ser
 - DRY principle is acheived as much possible.
 - Error handling middleware
 - Use of third party libraries is kept to minimal. 
+
+
+## DATABASE
+ - MongoDB is used for database
+ - DB is hosted on atlas 
