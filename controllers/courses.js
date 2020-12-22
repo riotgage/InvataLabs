@@ -47,7 +47,7 @@ exports.getCourse=async(req,res,next)=>{
 
         const course=await query;
         if(!course){
-            return next(new ErrorResponse("Course with id "+req.params.id+"not found",404))
+            return next(new errorResponse("Course with id "+req.params.id+"not found",404))
         }
         res.status(200).json({
             success:true,
@@ -59,7 +59,7 @@ exports.getCourse=async(req,res,next)=>{
 }
 
 //@desc  Add Course
-//@Route POST /api/v1/bootcamps/:bootcampId/courses     Routed from bootcamp router
+//@Route POST /api/v1/bootcamps/:bootcampId/courses     
 //@access Private
 
 exports.addCourse=async(req,res,next)=>{

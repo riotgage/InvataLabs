@@ -124,7 +124,6 @@ exports.updateUser=async(req,res,next)=>{
 
 exports.updateUserPassword=async(req,res,next)=>{
     try{
-
         const user=await User.findById(req.user.id).select('+password')
         if(!(await user.authPassword(req.body.currentPassword))){
             return next(new errorResponse("Password is not correct",404))
