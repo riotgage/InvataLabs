@@ -1,4 +1,5 @@
-const User=require('../models/User')
+const SecreatCode=require('../models/secreatCode')
+const User = require('../models/User')
 const errorResponse=require('../utils/errorResponse');
 const path=require('path');
 const colors=require('colors')
@@ -19,7 +20,33 @@ exports.register=async(req,res,next)=>{
             password,
             role
         });
-        sendResponse(user,200,res)
+        const verifyToken=user.getVerifyToken();
+        const secreatcode=await SecreatCode.create({
+            email:user.email,
+            code:verifyToken
+        })
+        console.log(secreatcode)
+        const resetUrl = `${req.protocol}://${req.get(
+            'host',
+          )}/api/v1/auth/verifyEmail/${verifyToken}`;
+        
+          const message = `You are receiving this email because you (or someone else) has requested to create an account on InvataLabs.To activate your account please click on this link: \n\n ${resetUrl}`;
+        
+          try{
+              await sendEmail({
+                  email:user.email,  
+                  subject:"Accocunt Activation link", 
+                  message
+                })
+                res.status(200).json({
+                    success:true,
+                    data:"Activation link has been sent on the Registeration email"
+                })
+          }catch(error){
+              console.log(error)
+              secreatcode.remove()
+              return next(new errorResponse("Email Could not be sent",500))
+          }
     }catch(error){
         next(error);
     }
@@ -41,7 +68,11 @@ exports.login=async(req,res,next)=>{
         if(!user){
             return next(new errorResponse(`Credentials are invalid`,401))
         }
-        const isMatch= await user.authPassword(password); 
+
+        if(user.status!="active"){
+            return next(new errorResponse(`Email is not verfied`,401))
+        }
+        const isMatch= await user.authPassword(password);  
         console.log(`${isMatch}`.yellow)
  
         if(!isMatch){
@@ -218,6 +249,45 @@ exports.resetPassword=async(req,res,next)=>{
         next(error);
     }
 }
+
+//@desc Verify User Email
+//@Route PUT /api/v1/auth/verifyEmail/:token
+//@access Public
+
+exports.verifyEmail=async(req,res,next)=>{
+    try{
+        const verifyToken=req.params.token
+
+        const secreatcode=await SecreatCode.findOne({ 
+            code:verifyToken
+        })
+        console.log(req.params.token)
+        console.log(secreatcode)
+
+        if(!secreatcode){
+            return next(new errorResponse(`Token is invalid`,400))
+        }
+
+        const user=await User.findOne({
+            email:secreatcode.email
+        }) 
+        if(!user){
+            return next(new errorResponse(`Bad Request, Can not find User associated with this email address`,400))
+        }
+        console.log(user)
+        //set New status
+        user.status="active";
+        await user.save()
+        secreatcode.remove();
+        res.status(200).json({
+            success:true,
+            msg:"Email Verified, You can login Now"
+        })
+    }catch(error){
+        next(error); 
+    }
+}
+
 
 
 

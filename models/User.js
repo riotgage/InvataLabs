@@ -37,6 +37,10 @@ const UserSchema = new mongoose.Schema({
 	type: Date,
 	default: Date.now(), 
   },
+  status: {
+	type: String,
+	default: "pending",
+  }
 });
 
 //encrypt password
@@ -76,4 +80,18 @@ UserSchema.methods.getResetPasswordToken = function () {
 	return resetToken;
 	
 };
+
+// Generate and Hash verify token  
+
+UserSchema.methods.getVerifyToken = function () {
+    // Generate a token
+    const verifyToken = crypto.randomBytes(20).toString("hex");
+  
+    // Hash Token and set to resetPassworktoken
+      this.code = verifyToken
+       return verifyToken;
+      
+  };
 module.exports = mongoose.model("User", UserSchema);
+
+
