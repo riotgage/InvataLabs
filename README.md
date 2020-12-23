@@ -57,7 +57,9 @@ This repo is a node backend to this platform which provides many of the must ser
   * To make any user admin it has to be done directly in the Database.
   * Once registered, a token will be sent along with a cookie (token = xxx)
   * Passwords are encrypted before storing
+  * Email will be sent with activation link.
 - User login
+  * Account must have been activated using activation link
   * User can login with email and password
   * Upon loggin in, a JWT token will be sent along with a cookie (token = xxx)
 - User logout
@@ -88,7 +90,7 @@ This repo is a node backend to this platform which provides many of the must ser
 ## Documentation
 - Postman was used to test the API and then the JSON file it generated was fed to docGen to generate the index file as seen on the deployment site.
 
-## Deployment (Heroku)
+## Deployment (Heroku) (NOT WORKING ,ran into some regarding account verification to add add-on for static IP addresss reqiored to connect to MongoDB atlas, Currently Looking for alternatives for deployment)
 - Node app is deployed on heroku, find it here (https://invatalabs.herokuapp.com/)
 - If app is taking some time to load please be patient. If heroku app is not visited for some time it is loaded off the server and it takes some time to load it back. 
 
