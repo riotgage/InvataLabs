@@ -57,7 +57,9 @@ This repo is a node backend to this platform which provides many of the must ser
   * To make any user admin it has to be done directly in the Database.
   * Once registered, a token will be sent along with a cookie (token = xxx)
   * Passwords are encrypted before storing
+  * Email will be sent with activation link.
 - User login
+  * Account must have been activated using activation link
   * User can login with email and password
   * Upon loggin in, a JWT token will be sent along with a cookie (token = xxx)
 - User logout
