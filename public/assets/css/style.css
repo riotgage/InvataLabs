@@ -50,7 +50,9 @@ a:hover {
 i,
 span,
 a {
-  display: inline-block; }
+  display: inline-block;
+  color: #FFFFFF
+}
 
 h1,
 h2,
