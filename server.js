@@ -60,10 +60,7 @@ app.use(errorHandler)
 
 //Wild Card Route
 app.all('*',(req,res)=>{
-    res.status(404).send({ 
-        success:false,
-        msg:"This path doesn't exist"
-    });
+    res.status(404).sendFile(path.join(__dirname,'public','lost.html'));
 });
 
 const server=app.listen(PORT, () => {
