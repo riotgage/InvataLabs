@@ -1,6 +1,6 @@
 # InvataLabs Backend API Specifications
 ## https://invatalabs.herokuapp.com/
-InvatLabs is a Workshop platform, which provides professionals from different areas a get a esacpe from their daily routine. Invata Labs will provide small courses in simple arts e.g. origami, sketching etc. This courses are not modeled to have mastery over the art but just escape from daily routine. One will have something to show after each course.
+InvatLabs is a Workshop platform, which provides professionals from different areas an esacpe from their daily routine. Invata Labs will provide small courses in simple arts e.g. origami, sketching etc. This courses are not modeled to have mastery over the art but just escape from daily routine. One will have something to show after each course.
 Workshops can either be totally online or offline.
 This repo is a node backend to this platform which provides many of the must services for the platform.
 
